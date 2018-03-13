@@ -1,0 +1,2 @@
+# ProofOfConceptBachelorproef
+Scanning Freestyle Libre
