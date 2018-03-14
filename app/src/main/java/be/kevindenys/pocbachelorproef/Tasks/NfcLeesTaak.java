@@ -124,15 +124,46 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
         myApp.voegToeAanLog("Tijd over in min", Integer.toString(14 * 24 * 60 - leeftijd) );
 
         // Glucose Ophalen
+        // Recent blocks
+        myApp.voegToeAanLog("Recent Blocks", bytesArrayNaarGlucoseBlocks(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
         // Recent
-        myApp.voegToeAanLog("Recent", bytesArrayNaarGlucoseLijst(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
+        myApp.voegToeAanLog("Recent Glucose", bytesArrayNaarGlucoseLijst(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
+        // Current
+        myApp.setCurrentGlucose(Integer.parseInt(getCurrentGlucoseHex(krijgRecenteData(sensorInBytes),Integer.parseInt(byteToHex(sensorInBytes[26]),16)),16));
+
         // Glucose Ophalen
+        // Geschiedenis blocks
+        myApp.voegToeAanLog("Geschiedenis Blocks", bytesArrayNaarGlucoseBlocks(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
         // Geschiedenis
-        myApp.voegToeAanLog("Recent", bytesArrayNaarGlucoseLijst(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
+        myApp.voegToeAanLog("History Glucose", bytesArrayNaarGlucoseLijst(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
         // LOG
-        myApp.setLogView();
+        myApp.updateUi();
 
 
+    }
+
+    public ArrayList<String> bytesArrayNaarGlucoseBlocks(byte[] sib, int startIndex){
+        ArrayList<String> glucoseBlocks = new ArrayList<>();
+        // Glucose blocks zijn 6 bytes lang
+        int aantalBlocks = (sib.length / 6)+1;
+
+        for (int i = 0; i < aantalBlocks-1; i++) {
+            String special = "";
+            if((i+1) == startIndex){
+            special = "!";
+            }
+            String block =  "[Glucose Block " + special + (i+1) + special + " ]: " + byteToHex(sib[i*6+0]) + byteToHex(sib[i*6+1])
+                    + byteToHex(sib[i*6+2]) + byteToHex(sib[i*6+3])
+                    + byteToHex(sib[i*6+4]) + byteToHex(sib[i*6+5]);
+            glucoseBlocks.add(block);
+    }
+    return glucoseBlocks;
+    }
+
+    public String getCurrentGlucoseHex(byte[] sib, int startIndex){
+        //Arrays start at 0
+        startIndex--;
+        return bytesToHex((new byte[]{sib[(startIndex * 6 + 1)], sib[(startIndex * 6 + 0)]}));
     }
 
     public ArrayList<String> bytesArrayNaarGlucoseLijst(byte[] sib, int startIndex){

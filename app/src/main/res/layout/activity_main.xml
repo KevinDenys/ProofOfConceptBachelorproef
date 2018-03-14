@@ -14,7 +14,34 @@ android:scrollbarStyle="outsideOverlay" >
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center">
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
+<TextView
+    android:textSize="22sp"
+    android:text="Glucose: "
+    android:id="@+id/txtGlucose"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+<Button
+    android:id="@+id/btnReset"
+    android:text="Reset"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnCopy"
+        android:text="Copy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView
+        android:textSize="22sp"
+        android:text="Debug log: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <TextView
 
         android:id="@+id/textLog"

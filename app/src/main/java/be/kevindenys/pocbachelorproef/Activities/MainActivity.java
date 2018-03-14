@@ -9,6 +9,8 @@ import android.nfc.tech.NfcV;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -59,7 +61,24 @@ public class MainActivity extends AppCompatActivity {
 
         // Via NFC tag dump van de sensor weten we dat NFCV gebruikt moet worden
         techList = new String[][]{new String[]{NfcV.class.getName()}};
+        //Text
+        myApp.setCurrentView((TextView) findViewById(R.id.txtGlucose));
         myApp.setLogView((TextView) findViewById(R.id.textLog));
+        //Buttons
+       Button btnReset = (Button) findViewById(R.id.btnReset);
+       btnReset.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+                myApp.resetView();
+           }
+       });
+        Button btnCopy = (Button) findViewById(R.id.btnCopy);
+        btnCopy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myApp.copyDebug();
+            }
+        });
     }
 
     // NFC tutorial: https://www.youtube.com/watch?v=bbeS7FPjRNk
