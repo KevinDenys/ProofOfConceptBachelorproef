@@ -76,7 +76,7 @@ public class App extends Application {
             x += mijnLogs.get(i) + "\n";
         }
         logView.setText(x);
-        currentView.setText("Glucose: " + currentGlucose);
+        currentView.setText("Glucose: " + (currentGlucose/10) + " mg/dL");
     }
 
     public void resetView(){

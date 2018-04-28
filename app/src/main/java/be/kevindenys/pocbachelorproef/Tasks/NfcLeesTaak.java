@@ -20,10 +20,10 @@ import be.kevindenys.pocbachelorproef.App;
 public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
 
     private Context context;
-    // Via NFC tools weten we de sensor byte grote (360) en de block grote (8)
-    private final int AANTAL_BLOKKEN = 360 / 8;
+    // Via onderzoek weten we de sensor byte grote (320) en de block grote (8)
+    private final int AANTAL_BLOKKEN = 320 / 8;
     //byteArray maken om de sensor data in op te slaan
-    private byte[] sensorInBytes = new byte[360];
+    private byte[] sensorInBytes = new byte[320];
 
     private App myApp;
 
@@ -36,7 +36,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
     protected byte[] doInBackground(Tag... tags) {
         int byteOffset = 2;
         byte[] temp;
-        byte[] block = new byte[360];
+        byte[] block = new byte[320];
 
         // Sensor Tag
         Tag tag = tags[0];
@@ -107,11 +107,11 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
         // Trent block is de block die de actuele glucose weet
         // De trent block is de block die ook naar history geschreven zal worden
         String recentBlockStartHex = byteToHex(sensorInBytes[26]);
-        myApp.voegToeAanLog("Start Index Recent", recentBlockStartHex + " => " + Integer.parseInt(recentBlockStartHex,16));
+        myApp.voegToeAanLog("Overschrijf Index Recent", recentBlockStartHex + " => " + Integer.parseInt(recentBlockStartHex,16));
 
         // De index waar history zijn circle start
         String geschiedenisBlockStartHex = byteToHex(sensorInBytes[27]);
-        myApp.voegToeAanLog("Start Index Geschiedenis", geschiedenisBlockStartHex + " => " + Integer.parseInt(geschiedenisBlockStartHex,16));
+        myApp.voegToeAanLog("Overschrijf Index Geschiedenis", geschiedenisBlockStartHex + " => " + Integer.parseInt(geschiedenisBlockStartHex,16));
 
         int leeftijd = Integer.parseInt(bytesToHex(new byte[]{sensorInBytes[317], sensorInBytes[316]}),16);
         // De sensor leeftijd bevind zich in byte 317 en byte 316
@@ -127,7 +127,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
         // Recent blocks
         myApp.voegToeAanLog("Recent Blocks", bytesArrayNaarGlucoseBlocks(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
         // Recent
-        myApp.voegToeAanLog("Recent Glucose", bytesArrayNaarGlucoseLijst(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
+        myApp.voegToeAanLog("Recent Glucose - gesorteerd", bytesArrayNaarGlucoseLijst(krijgRecenteData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[26]),16)));
         // Current
         myApp.setCurrentGlucose(Integer.parseInt(getCurrentGlucoseHex(krijgRecenteData(sensorInBytes),Integer.parseInt(byteToHex(sensorInBytes[26]),16)),16));
 
@@ -135,7 +135,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
         // Geschiedenis blocks
         myApp.voegToeAanLog("Geschiedenis Blocks", bytesArrayNaarGlucoseBlocks(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
         // Geschiedenis
-        myApp.voegToeAanLog("History Glucose", bytesArrayNaarGlucoseLijst(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
+        myApp.voegToeAanLog("Geschiedenis Glucose - gesorteerd", bytesArrayNaarGlucoseLijst(krijgGeschiedenisData(sensorInBytes), Integer.parseInt(byteToHex(sensorInBytes[27]),16)));
         // LOG
         myApp.updateUi();
 
@@ -145,14 +145,14 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
     public ArrayList<String> bytesArrayNaarGlucoseBlocks(byte[] sib, int startIndex){
         ArrayList<String> glucoseBlocks = new ArrayList<>();
         // Glucose blocks zijn 6 bytes lang
-        int aantalBlocks = (sib.length / 6)+1;
+        int aantalBlocks = (sib.length / 6);
 
-        for (int i = 0; i < aantalBlocks-1; i++) {
+        for (int i = 0; i < aantalBlocks; i++) {
             String special = "";
-            if((i+1) == startIndex){
+            if((i) == startIndex){
             special = "!";
             }
-            String block =  "[Glucose Block " + special + (i+1) + special + " ]: " + byteToHex(sib[i*6+0]) + byteToHex(sib[i*6+1])
+            String block =  "[Glucose Block " + special + (i) + special + " ]: " + byteToHex(sib[i*6+0]) + byteToHex(sib[i*6+1])
                     + byteToHex(sib[i*6+2]) + byteToHex(sib[i*6+3])
                     + byteToHex(sib[i*6+4]) + byteToHex(sib[i*6+5]);
             glucoseBlocks.add(block);
@@ -169,7 +169,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
     public ArrayList<String> bytesArrayNaarGlucoseLijst(byte[] sib, int startIndex){
         ArrayList<String> glucoseLijst = new ArrayList<>();
         // Glucose blocks zijn 6 bytes lang
-        int aantalBlocks = (sib.length / 6)+1;
+        int aantalBlocks = (sib.length / 6);
 
         for (int index = 0; index < aantalBlocks; index++) {
             int i = startIndex - index - 1;
@@ -180,7 +180,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
            // Decimale glucose
             int glucoseD = Integer.parseInt(glucose, 16);
 
-           glucoseLijst.add("[" + (i+1) + "]: HEX: " + glucose + " => RAW: " + Integer.toString(glucoseD) + " => " + Double.toString(glucoseD/10));
+           glucoseLijst.add("[" + (i) + "]: HEX: " + glucose + " => RAW: " + Integer.toString(glucoseD) + " => " + Double.toString(glucoseD/10));
 
         }
 
@@ -188,7 +188,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
     }
 
     public byte[] krijgRecenteData(byte [] sib){
-        return Arrays.copyOfRange(sib, 28, 123);
+        return Arrays.copyOfRange(sib, 28, 124);
     }
     public byte[] krijgGeschiedenisData(byte [] sib){
         return Arrays.copyOfRange(sib, 124, 315);
@@ -196,7 +196,7 @@ public class NfcLeesTaak extends AsyncTask<Tag, Void, byte[]> {
 
     public List<String> bytesNaarHexBlocks(byte[] sib){
         List<String> hexBlocks = new ArrayList<>();
-        for (int i = 0; i < 360; i += 8) {
+        for (int i = 0; i < 320; i += 8) {
             // 8 Bytes per block
             hexBlocks.add("[BLOCK " + Integer.toString(i / 8, 16) + "]: " + byteToHex(sib[i]) + byteToHex(sib[i+1])
                     + byteToHex(sib[i+2]) + byteToHex(sib[i+3])
